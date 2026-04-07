@@ -3,84 +3,83 @@ import java.util.*;
 public class Week3_4 {
 
     // -------- LINEAR SEARCH --------
-    static void linearSearch(String[] arr, String target) {
-        int first = -1, last = -1;
+    static void linearSearch(int[] arr, int target) {
         int comparisons = 0;
+        boolean found = false;
 
         for (int i = 0; i < arr.length; i++) {
             comparisons++;
-            if (arr[i].equals(target)) {
-                if (first == -1) first = i;
-                last = i;
+            if (arr[i] == target) {
+                System.out.println("Linear: found at index " + i);
+                found = true;
+                break;
             }
         }
 
-        System.out.println("Linear first " + target + ": index " + first);
-        System.out.println("Linear last " + target + ": index " + last);
+        if (!found) {
+            System.out.println("Linear: threshold=" + target + " → not found");
+        }
         System.out.println("Comparisons: " + comparisons);
     }
 
-    // -------- BINARY SEARCH --------
-    static void binarySearch(String[] arr, String target) {
+    // -------- BINARY SEARCH FLOOR & CEILING --------
+    static void binaryFloorCeil(int[] arr, int target) {
         int low = 0, high = arr.length - 1;
+        int floor = -1, ceil = -1;
         int comparisons = 0;
-        int foundIndex = -1;
 
         while (low <= high) {
             int mid = (low + high) / 2;
             comparisons++;
 
-            int cmp = arr[mid].compareTo(target);
-
-            if (cmp == 0) {
-                foundIndex = mid;
+            if (arr[mid] == target) {
+                floor = arr[mid];
+                ceil = arr[mid];
                 break;
-            } else if (cmp < 0) {
+            } else if (arr[mid] < target) {
+                floor = arr[mid];
                 low = mid + 1;
             } else {
+                ceil = arr[mid];
                 high = mid - 1;
             }
         }
 
-        int count = 0;
-
-        if (foundIndex != -1) {
-            // Count duplicates (expand left & right)
-            int left = foundIndex;
-            int right = foundIndex;
-
-            while (left >= 0 && arr[left].equals(target)) {
-                count++;
-                left--;
-            }
-
-            while (right < arr.length && arr[right].equals(target)) {
-                count++;
-                right++;
-            }
-
-            count--; // adjust double count at foundIndex
-        }
-
-        System.out.println("Binary " + target + ": index " + foundIndex);
-        System.out.println("Count: " + count);
+        System.out.println("Binary floor(" + target + "): " + floor);
+        System.out.println("Binary ceiling(" + target + "): " + ceil);
         System.out.println("Comparisons: " + comparisons);
+    }
+
+    // -------- BINARY INSERTION POINT --------
+    static int insertionPoint(int[] arr, int target) {
+        int low = 0, high = arr.length;
+
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (arr[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
     }
 
     public static void main(String[] args) {
 
-        String[] logs = {"accB", "accA", "accB", "accC"};
+        int[] risks = {10, 25, 50, 100};
 
-        System.out.println("Input logs: " + Arrays.toString(logs));
+        System.out.println("Sorted risks: " + Arrays.toString(risks));
 
-        // Linear Search
-        linearSearch(logs, "accB");
+        // Linear Search on unsorted (simulate)
+        int[] unsorted = {50, 10, 100, 25};
+        linearSearch(unsorted, 30);
 
-        // Sort for Binary Search
-        Arrays.sort(logs);
-        System.out.println("Sorted logs: " + Arrays.toString(logs));
+        // Binary Search for floor & ceiling
+        binaryFloorCeil(risks, 30);
 
-        // Binary Search
-        binarySearch(logs, "accB");
+        // Binary insertion point
+        int pos = insertionPoint(risks, 30);
+        System.out.println("Insertion index for 30: " + pos);
     }
 }
